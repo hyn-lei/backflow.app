@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
 
-    const platform = await directus.request(
+    const platform = await directus().request(
       createItem('platforms', {
         name,
         slug,

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const items = await directus.request(
+    const items = await directus().request(
       readItems('user_boards', {
         filter: { user: { _eq: userId } },
         fields: ['*', { platform: ['*'] }],
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already added
-    const existing = await directus.request(
+    const existing = await directus().request(
       readItems('user_boards', {
         filter: {
           user: { _eq: userId },
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Already added to board' }, { status: 400 });
     }
 
-    const item = await directus.request(
+    const item = await directus().request(
       createItem('user_boards', {
         user: userId,
         platform: platformId,
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Fetch with platform details
-    const items = await directus.request(
+    const items = await directus().request(
       readItems('user_boards', {
         filter: { id: { _eq: item.id } },
         fields: ['*', { platform: ['*'] }],

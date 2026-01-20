@@ -3,66 +3,93 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Layers, Mail, Lock, Github } from 'lucide-react';
+import { Layers, Mail, Lock, User, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/sign-up', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.error || 'Registration failed');
       }
 
       setUser(data.user);
-      toast.success('Welcome back!');
+      toast.success('Account created successfully!');
       router.push('/');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Login failed');
+      toast.error(error instanceof Error ? error.message : 'Registration failed');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <Link href="/" className="flex items-center justify-center space-x-2 mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30 px-4 py-12">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1 text-center pb-4">
+          <Link href="/" className="flex items-center justify-center space-x-2 mb-4 text-foreground hover:text-primary transition-colors">
             <Layers className="h-8 w-8" />
             <span className="text-2xl font-bold">BacklinkFlow</span>
           </Link>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>Enter your credentials to sign in</CardDescription>
+          <CardTitle className="text-2xl text-foreground">Create an account</CardTitle>
+          <CardDescription>Enter your details to get started</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="email"
-                  placeholder="Email"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
@@ -71,11 +98,12 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="password"
-                  placeholder="Password"
+                  placeholder="At least 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
@@ -83,8 +111,22 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Confirm Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Creating account...' : 'Create account'}
             </Button>
           </form>
 
@@ -98,7 +140,7 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" disabled>
+            <Button variant="outline" onClick={() => window.location.href = '/api/auth/google'}>
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -119,17 +161,17 @@ export default function LoginPage() {
               </svg>
               Google
             </Button>
-            <Button variant="outline" disabled>
+            <Button variant="outline" onClick={() => window.location.href = '/api/auth/github'}>
               <Github className="mr-2 h-4 w-4" />
               GitHub
             </Button>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex justify-center pt-2">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-primary hover:underline">
-              Sign up
+            Already have an account?{' '}
+            <Link href="/sign-in" className="text-primary hover:underline font-medium">
+              Sign in
             </Link>
           </p>
         </CardFooter>

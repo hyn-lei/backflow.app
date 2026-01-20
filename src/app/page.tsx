@@ -3,7 +3,7 @@ import { readItems } from '@directus/sdk';
 import { DirectoryClient } from './directory-client';
 
 async function getPlatforms() {
-  const platforms = await directus.request(
+  const platforms = await directus().request(
     readItems('platforms', {
       filter: { status: { _eq: 'published' } },
       fields: ['*', { categories: [{ categories_id: ['*'] }] }],
@@ -14,7 +14,7 @@ async function getPlatforms() {
 }
 
 async function getCategories() {
-  const categories = await directus.request(
+  const categories = await directus().request(
     readItems('categories', {
       fields: ['*'],
       sort: ['name'],

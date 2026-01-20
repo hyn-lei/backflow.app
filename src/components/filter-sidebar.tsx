@@ -24,9 +24,9 @@ export function FilterSidebar({
   onCostFilterChange,
 }: FilterSidebarProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 bg-card rounded-lg border border-border">
       <div>
-        <h3 className="font-semibold mb-3">Search</h3>
+        <h3 className="font-semibold mb-3 text-foreground">Search</h3>
         <div className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
@@ -39,41 +39,45 @@ export function FilterSidebar({
       </div>
 
       <div>
-        <h3 className="font-semibold mb-3">Categories</h3>
+        <h3 className="font-semibold mb-3 text-foreground">Categories</h3>
         <div className="space-y-2">
           {categories.map((category) => (
             <label
               key={category.id}
-              className="flex items-center space-x-2 cursor-pointer"
+              className="flex items-center space-x-2 cursor-pointer group"
             >
               <input
                 type="checkbox"
                 checked={selectedCategories.includes(category.id)}
                 onChange={() => onCategoryChange(category.id)}
-                className="rounded border-border"
+                className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary focus:ring-offset-background"
               />
-              <span className="text-sm">{category.name}</span>
+              <span className="text-sm text-foreground group-hover:text-primary transition-colors">
+                {category.name}
+              </span>
             </label>
           ))}
         </div>
       </div>
 
       <div>
-        <h3 className="font-semibold mb-3">Cost Type</h3>
+        <h3 className="font-semibold mb-3 text-foreground">Cost Type</h3>
         <div className="space-y-2">
           {['all', 'free', 'paid', 'freemium'].map((cost) => (
             <label
               key={cost}
-              className="flex items-center space-x-2 cursor-pointer"
+              className="flex items-center space-x-2 cursor-pointer group"
             >
               <input
                 type="radio"
                 name="cost"
                 checked={costFilter === cost}
                 onChange={() => onCostFilterChange(cost)}
-                className="border-border"
+                className="h-4 w-4 border-border bg-background text-primary focus:ring-primary focus:ring-offset-background"
               />
-              <span className="text-sm capitalize">{cost === 'all' ? 'All' : cost}</span>
+              <span className="text-sm text-foreground capitalize group-hover:text-primary transition-colors">
+                {cost === 'all' ? 'All' : cost}
+              </span>
             </label>
           ))}
         </div>

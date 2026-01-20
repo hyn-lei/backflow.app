@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -14,7 +16,9 @@
   --accent: 210 40% 96%;
   --accent-foreground: 222.2 47.4% 11.2%;
   --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
   --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
 }
 
 .dark {
@@ -31,6 +35,7 @@
   --accent: 217.2 32.6% 17.5%;
   --accent-foreground: 210 40% 98%;
   --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
   --ring: 212.7 26.8% 83.9%;
 }
 
@@ -48,7 +53,9 @@
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --radius: var(--radius);
 }
 
 * {
@@ -58,4 +65,81 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+/* Container with responsive padding */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+/* Form elements for dark mode */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: hsl(var(--primary));
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+/* Selection color */
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }

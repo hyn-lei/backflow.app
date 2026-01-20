@@ -33,7 +33,7 @@ export function PlatformCard({ platform }: PlatformCardProps) {
 
   const handleAddToBoard = async () => {
     if (!user) {
-      router.push('/login');
+      router.push('/sign-in');
       return;
     }
 
@@ -46,30 +46,30 @@ export function PlatformCard({ platform }: PlatformCardProps) {
   };
 
   return (
-    <Card className="group hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
+    <Card className="group hover:shadow-md hover:border-primary/50 transition-all duration-200">
+      <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-3">
             {platform.logo ? (
               <img
                 src={getDirectusFileUrl(platform.logo) || ''}
                 alt={platform.name}
-                className="h-10 w-10 rounded-lg object-cover"
+                className="h-12 w-12 rounded-lg object-cover border border-border"
               />
             ) : (
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                <span className="text-lg font-bold text-muted-foreground">
+              <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-border">
+                <span className="text-lg font-bold text-primary">
                   {platform.name[0]}
                 </span>
               </div>
             )}
             <div>
-              <h3 className="font-semibold">{platform.name}</h3>
+              <h3 className="font-semibold text-foreground">{platform.name}</h3>
               <a
                 href={platform.website_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground flex items-center"
+                className="text-xs text-muted-foreground hover:text-primary flex items-center transition-colors"
               >
                 Visit site <ExternalLink className="h-3 w-3 ml-1" />
               </a>
@@ -77,8 +77,8 @@ export function PlatformCard({ platform }: PlatformCardProps) {
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-          {platform.description}
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem]">
+          {platform.description || 'No description available.'}
         </p>
 
         <div className="flex items-center justify-between">
@@ -96,6 +96,7 @@ export function PlatformCard({ platform }: PlatformCardProps) {
             variant={isAdded ? 'secondary' : 'default'}
             onClick={handleAddToBoard}
             disabled={isAdded || isAdding}
+            className="transition-all"
           >
             {isAdded ? (
               <>

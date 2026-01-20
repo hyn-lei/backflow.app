@@ -11,7 +11,7 @@ export async function PATCH(
   try {
     const body = await request.json();
 
-    const item = await directus.request(
+    const item = await directus().request(
       updateItem('user_boards', id, body)
     );
 
@@ -29,7 +29,7 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    await directus.request(deleteItem('user_boards', id));
+    await directus().request(deleteItem('user_boards', id));
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete board item:', error);

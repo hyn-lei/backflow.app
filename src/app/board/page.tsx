@@ -16,7 +16,7 @@ export default function BoardPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push('/sign-in');
     }
   }, [authLoading, user, router]);
 

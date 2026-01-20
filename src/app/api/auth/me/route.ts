@@ -18,7 +18,7 @@ export async function GET() {
   }
 
   try {
-    const user = await directus.request(readItem('users', session.userId));
+    const user = await directus().request(readItem('users', session.userId));
     return NextResponse.json({ user });
   } catch {
     return NextResponse.json({ user: null }, { status: 401 });

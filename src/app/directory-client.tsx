@@ -88,7 +88,7 @@ export function DirectoryClient({ platforms, categories }: DirectoryClientProps)
                 Track your submissions and grow your SEO presence.
               </p>
               {!user && (
-                <Link href="/register">
+                <Link href="/sign-up">
                   <Button size="lg">
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />

@@ -1,4 +1,4 @@
-import { createDirectus, rest, staticToken } from '@directus/sdk';
+import { createDirectus, rest, staticToken, RestClient, DirectusClient, StaticTokenClient } from '@directus/sdk';
 
 export interface Platform {
   id: string;
@@ -58,14 +58,24 @@ export interface Schema {
   user_boards: UserBoard[];
 }
 
-const directusUrl = process.env.DIRECTUS_URL!;
-const directusToken = process.env.DIRECTUS_TOKEN!;
+const getDirectusUrl = () => process.env.DIRECTUS_URL || 'http://localhost:8055';
+const getDirectusToken = () => process.env.DIRECTUS_TOKEN || '';
 
-export const directus = createDirectus<Schema>(directusUrl)
-  .with(staticToken(directusToken))
-  .with(rest());
+type Client = DirectusClient<Schema> & StaticTokenClient<Schema> & RestClient<Schema>;
+
+// Create client lazily to avoid issues during build/bundling
+let _directus: Client | null = null;
+
+export const directus = (): Client => {
+  if (!_directus) {
+    _directus = createDirectus<Schema>(getDirectusUrl())
+      .with(staticToken(getDirectusToken()))
+      .with(rest());
+  }
+  return _directus;
+};
 
 export const getDirectusFileUrl = (fileId: string | null) => {
   if (!fileId) return null;
-  return `${directusUrl}/assets/${fileId}`;
+  return `${getDirectusUrl()}/assets/${fileId}`;
 };
