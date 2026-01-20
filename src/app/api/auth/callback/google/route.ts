@@ -96,6 +96,7 @@ export async function GET(request: NextRequest) {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 7 days
+            path: '/',
         });
 
         const validState = state.startsWith('http') ? state : `${process.env.NEXT_PUBLIC_APP_URL}${state}`;
