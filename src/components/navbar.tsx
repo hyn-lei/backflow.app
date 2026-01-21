@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Layers, LayoutDashboard, LogIn, LogOut, User } from 'lucide-react';
+import { Link2, LayoutDashboard, LogIn, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
@@ -13,7 +14,7 @@ export function Navbar() {
   const { user, logout, isLoading } = useAuth();
 
   const navLinks = [
-    { href: '/', label: 'Directory', icon: Layers },
+    { href: '/', label: 'Directory', icon: Link2 },
     { href: '/board', label: 'My Board', icon: LayoutDashboard, protected: true },
   ];
 
@@ -21,7 +22,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Layers className="h-6 w-6" />
+          <Image src="/web-app-manifest-512x512.png" alt="BacklinkFlow" width={28} height={28} className="rounded-sm" />
           <span className="font-bold">BacklinkFlow</span>
         </Link>
 
