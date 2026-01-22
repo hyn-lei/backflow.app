@@ -14,7 +14,7 @@ export function Navbar() {
   const { user, logout, isLoading } = useAuth();
 
   const navLinks = [
-    { href: '/', label: 'Directory', icon: Link2 },
+    { href: '/', label: 'Platforms', icon: Link2 },
     { href: '/board', label: 'My Board', icon: LayoutDashboard, protected: true },
   ];
 

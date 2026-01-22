@@ -7,8 +7,8 @@ import { GoogleAnalytics } from '@/components/google-analytics';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'BacklinkFlow - Discover & Track Backlink Platforms',
-  description: 'Stop guessing where to post. Find the best platforms for building backlinks.',
+  title: 'BacklinkFlow - SEO & Backlink Management',
+  description: 'Manage your SEO and backlink strategy efficiently.',
   icons: {
     icon: [
       { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },

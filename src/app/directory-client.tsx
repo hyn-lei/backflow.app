@@ -81,11 +81,10 @@ export function DirectoryClient({ platforms, categories }: DirectoryClientProps)
           <div className="container py-16 md:py-24">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                Stop guessing where to post.
+                Build your Backlink Strategy
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Discover the best platforms to build backlinks for your product.
-                Track your submissions and grow your SEO presence.
+                Discover platforms, track submissions, and grow your SEO presence.
               </p>
               {!user && (
                 <Link href="/sign-up">
