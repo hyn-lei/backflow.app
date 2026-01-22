@@ -49,49 +49,50 @@ export function PlatformCard({ platform }: PlatformCardProps) {
   };
 
   return (
-    <Card className="group hover:shadow-md hover:border-primary/50 transition-all duration-200">
-      <CardContent className="p-5">
+    <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 border-border/50 bg-background/50 hover:bg-background hover:border-primary/50">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <CardContent className="p-5 relative">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-3">
             {platform.logo ? (
               <img
                 src={getDirectusFileUrl(platform.logo) || ''}
                 alt={platform.name}
-                className="h-12 w-12 rounded-lg object-cover border border-border"
+                className="h-12 w-12 rounded-xl object-cover border border-border shadow-sm group-hover:shadow-md transition-all"
               />
             ) : (
-              <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-border">
-                <span className="text-lg font-bold text-primary">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-border group-hover:border-primary/20 transition-colors">
+                <span className="text-lg font-bold text-primary font-heading">
                   {platform.name[0]}
                 </span>
               </div>
             )}
             <div>
               <Link href={`/platform/${platform.slug}`}>
-                <h3 className="font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">{platform.name}</h3>
+                <h3 className="font-heading font-semibold text-foreground hover:text-primary transition-colors cursor-pointer text-lg tracking-tight">{platform.name}</h3>
               </Link>
               <a
                 href={platform.website_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-primary flex items-center transition-colors"
+                className="text-xs text-muted-foreground hover:text-primary flex items-center transition-colors font-medium mt-0.5"
               >
-                Visit site <ExternalLink className="h-3 w-3 ml-1" />
+                Visit site <ExternalLink className="h-3 w-3 ml-1 opacity-70" />
               </a>
             </div>
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem]">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem] leading-relaxed">
           {platform.description || 'No description available.'}
         </p>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Badge variant={getDaBadgeVariant(platform.domain_authority)}>
+            <Badge variant={getDaBadgeVariant(platform.domain_authority)} className="shadow-sm">
               DA: {platform.domain_authority}
             </Badge>
-            <Badge variant={platform.cost_type === 'free' ? 'success' : 'secondary'}>
+            <Badge variant={platform.cost_type === 'free' ? 'success' : 'secondary'} className="shadow-sm">
               {platform.cost_type.charAt(0).toUpperCase() + platform.cost_type.slice(1)}
             </Badge>
           </div>
@@ -101,7 +102,7 @@ export function PlatformCard({ platform }: PlatformCardProps) {
             variant={isAdded ? 'secondary' : 'default'}
             onClick={handleAddToBoard}
             disabled={isAdded || isAdding}
-            className="transition-all"
+            className={`transition-all duration-300 ${isAdded ? 'bg-secondary/80' : 'shadow-md shadow-primary/20 hover:shadow-primary/40'}`}
           >
             {isAdded ? (
               <>

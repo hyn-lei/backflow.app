@@ -3,20 +3,25 @@ import { Layers } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
-        <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
-          <Layers className="h-6 w-6 text-foreground" />
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Built for indie hackers. Manage your backlink strategy.
-          </p>
-        </div>
-        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-          <Link href="/submit" className="hover:text-foreground transition-colors">
-            Submit a Platform
-          </Link>
-          <span className="text-border">|</span>
-          <span>&copy; {new Date().getFullYear()} BacklinkFlow</span>
+    <footer className="border-t border-border/40 bg-background">
+      <div className="container py-8 md:py-12">
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-secondary rounded-lg">
+              <Layers className="h-5 w-5 text-primary" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">
+              Built for <span className="text-foreground font-semibold">indie hackers</span>. Manage your backlink strategy.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-6 text-sm">
+            <Link href="/submit" className="font-medium text-muted-foreground transition-colors hover:text-primary hover:underline underline-offset-4">
+              Submit a Platform
+            </Link>
+            <span className="h-4 w-px bg-border/60" />
+            <span className="text-muted-foreground/60">&copy; {new Date().getFullYear()} BacklinkFlow</span>
+          </div>
         </div>
       </div>
     </footer>

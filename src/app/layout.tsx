@@ -1,10 +1,20 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Outfit, Manrope } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 import { GoogleAnalytics } from '@/components/google-analytics';
 
-const inter = Inter({ subsets: ['latin'] });
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'BacklinkFlow - SEO & Backlink Management',
@@ -27,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${manrope.className} ${manrope.variable} ${outfit.variable} antialiased`}>
         <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-M05YV6XWCG'} />
         <Providers>{children}</Providers>
       </body>

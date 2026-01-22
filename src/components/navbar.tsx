@@ -19,14 +19,14 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Image src="/web-app-manifest-512x512.png" alt="BacklinkFlow" width={28} height={28} className="rounded-sm" />
-          <span className="font-bold">BacklinkFlow</span>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center">
+        <Link href="/" className="mr-8 flex items-center space-x-2 transition-opacity hover:opacity-90">
+          <Image src="/web-app-manifest-512x512.png" alt="BacklinkFlow" width={32} height={32} className="rounded-lg" />
+          <span className="font-heading font-bold text-lg tracking-tight">BacklinkFlow</span>
         </Link>
 
-        <nav className="flex flex-1 items-center space-x-6 text-sm font-medium">
+        <nav className="flex flex-1 items-center space-x-1 text-sm font-medium">
           {navLinks.map((link) => {
             if (link.protected && !user) return null;
             return (
@@ -34,8 +34,8 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'flex items-center space-x-1 transition-colors hover:text-foreground/80',
-                  pathname === link.href ? 'text-foreground' : 'text-foreground/60'
+                  'flex items-center space-x-2 rounded-full px-4 py-2 transition-all hover:bg-secondary/80 hover:text-foreground',
+                  pathname === link.href ? 'bg-secondary text-foreground font-semibold' : 'text-muted-foreground'
                 )}
               >
                 <link.icon className="h-4 w-4" />
@@ -45,29 +45,30 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-4">
           <ThemeToggle />
           {isLoading ? (
-            <Button variant="ghost" size="sm" disabled>
-              Loading...
-            </Button>
+            <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
           ) : user ? (
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-2 text-sm">
-                {user.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.name || ''} className="h-8 w-8 rounded-full" />
-                ) : (
-                  <User className="h-5 w-5" />
-                )}
-                <span className="hidden md:inline">{user.name || user.email}</span>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3 text-sm">
+                <div className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-border">
+                  {user.avatar_url ? (
+                    <img src={user.avatar_url} alt={user.name || ''} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-secondary">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={logout}>
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={logout} className="text-muted-foreground hover:text-foreground">
+                <LogOut className="h-5 w-5" />
               </Button>
             </div>
           ) : (
             <Link href="/sign-in">
-              <Button variant="default" size="sm">
+              <Button variant="default" size="sm" className="rounded-full px-6 font-semibold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40">
                 <LogIn className="mr-2 h-4 w-4" />
                 Sign In
               </Button>

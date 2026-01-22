@@ -77,22 +77,34 @@ export function DirectoryClient({ platforms, categories }: DirectoryClientProps)
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="border-b border-border bg-gradient-to-b from-background to-muted/30">
-          <div className="container py-16 md:py-24">
+        <section className="relative overflow-hidden border-b border-border/40 bg-background pt-16 pb-20 md:pt-24 md:pb-32">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+          <div className="container relative z-10">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-6">
+                <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
+                SEO & Backlink Management
+              </div>
+              <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent pb-2">
                 Build your Backlink Strategy
               </h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                Discover platforms, track submissions, and grow your SEO presence.
+              <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
+                Discover curated platforms, track your submissions, and grow your SEO presence with data-driven insights.
               </p>
               {!user && (
-                <Link href="/sign-up">
-                  <Button size="lg">
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
+                <div className="flex items-center justify-center gap-4">
+                  <Link href="/sign-up">
+                    <Button size="lg" className="rounded-full px-8 h-12 text-base shadow-xl shadow-primary/20 transition-all hover:shadow-primary/40 hover:-translate-y-0.5">
+                      Get Started Free
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link href="#directory">
+                    <Button variant="outline" size="lg" className="rounded-full px-8 h-12 text-base">
+                      Explore Platforms
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
