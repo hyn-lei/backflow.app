@@ -1,18 +1,18 @@
 import { create } from 'zustand';
-import { UserBoard } from '@/lib/directus';
+import { ProjectTracking } from '@/lib/directus';
 
 interface BoardState {
-  items: UserBoard[];
+  items: ProjectTracking[];
   isLoading: boolean;
   isAdding: boolean;
-  setItems: (items: UserBoard[]) => void;
+  setItems: (items: ProjectTracking[]) => void;
   setLoading: (loading: boolean) => void;
-  addToBoard: (platformId: number, userId: string) => Promise<void>;
+  addToBoard: (platformId: number, projectId: string) => Promise<void>;
   removeFromBoard: (itemId: string) => Promise<void>;
-  updateStatus: (itemId: string, status: UserBoard['status']) => Promise<void>;
+  updateStatus: (itemId: string, status: ProjectTracking['status']) => Promise<void>;
   updateNotes: (itemId: string, notes: string) => Promise<void>;
   setBacklinkUrl: (itemId: string, url: string) => Promise<void>;
-  fetchBoard: (userId: string) => Promise<void>;
+  fetchBoard: (projectId: string) => Promise<void>;
 }
 
 export const useBoardStore = create<BoardState>((set, get) => ({
@@ -23,10 +23,10 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   setItems: (items) => set({ items }),
   setLoading: (isLoading) => set({ isLoading }),
 
-  fetchBoard: async (userId: string) => {
+  fetchBoard: async (projectId: string) => {
     set({ isLoading: true });
     try {
-      const res = await fetch(`/api/board?userId=${userId}`);
+      const res = await fetch(`/api/board?projectId=${projectId}`);
       if (res.ok) {
         const data = await res.json();
         set({ items: data.items });
@@ -38,19 +38,17 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     }
   },
 
-  addToBoard: async (platformId: number, userId: string) => {
+  addToBoard: async (platformId: number, projectId: string) => {
     set({ isAdding: true });
 
     const tempId = `temp-${Date.now()}`;
-    const optimisticItem: UserBoard = {
+    const optimisticItem: ProjectTracking = {
       id: tempId,
-      user: userId,
-      platform: platformId,
+      project_id: projectId,
+      platform_id: platformId,
       status: 'todo',
-      backlink_url: null,
+      live_backlink_url: null,
       notes: null,
-      date_created: new Date().toISOString(),
-      date_updated: new Date().toISOString(),
     };
 
     set((state) => ({ items: [...state.items, optimisticItem] }));
@@ -59,7 +57,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       const res = await fetch('/api/board', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ platformId, userId }),
+        body: JSON.stringify({ platformId, projectId }),
       });
 
       if (!res.ok) throw new Error('Failed to add');
@@ -100,7 +98,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     }
   },
 
-  updateStatus: async (itemId: string, status: UserBoard['status']) => {
+  updateStatus: async (itemId: string, status: ProjectTracking['status']) => {
     const { items } = get();
     const oldItem = items.find((i) => i.id === itemId);
 
@@ -148,18 +146,18 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     }
   },
 
-  setBacklinkUrl: async (itemId: string, backlink_url: string) => {
+  setBacklinkUrl: async (itemId: string, live_backlink_url: string) => {
     try {
       const res = await fetch(`/api/board/${itemId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ backlink_url }),
+        body: JSON.stringify({ live_backlink_url }),
       });
       if (!res.ok) throw new Error('Failed to update');
 
       set((state) => ({
         items: state.items.map((item) =>
-          item.id === itemId ? { ...item, backlink_url } : item
+          item.id === itemId ? { ...item, live_backlink_url } : item
         ),
       }));
     } catch (error) {

@@ -1,17 +1,6 @@
+import { DirectoryClient } from './directory-client';
 import { directus } from '@/lib/directus';
 import { readItems } from '@directus/sdk';
-import { DirectoryClient } from './directory-client';
-
-async function getPlatforms() {
-  const platforms = await directus().request(
-    readItems('platforms', {
-      filter: { status: { _eq: 'published' } },
-      fields: ['*', { categories: [{ categories_id: ['*'] }] }],
-      sort: ['-domain_authority'],
-    })
-  );
-  return platforms;
-}
 
 async function getCategories() {
   const categories = await directus().request(
@@ -24,12 +13,8 @@ async function getCategories() {
 }
 
 export default async function HomePage() {
-  const [platforms, categories] = await Promise.all([
-    getPlatforms(),
-    getCategories(),
-  ]);
-
-  return <DirectoryClient platforms={platforms} categories={categories} />;
+  const categories = await getCategories();
+  return <DirectoryClient categories={categories} />;
 }
 
 export const revalidate = 60;

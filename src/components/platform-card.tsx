@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useBoardStore } from '@/stores/board-store';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useProjectStore } from '@/stores/project-store';
 
 interface PlatformCardProps {
   platform: Platform;
@@ -19,13 +20,14 @@ export function PlatformCard({ platform }: PlatformCardProps) {
   const { user } = useAuth();
   const router = useRouter();
   const { items, addToBoard, isAdding } = useBoardStore();
+  const { currentProjectId } = useProjectStore();
 
   const isAdded = items.some((item) => {
-    if (!item.platform) return false;
-    if (typeof item.platform === 'number') {
-      return item.platform === platform.id;
+    if (!item.platform_id) return false;
+    if (typeof item.platform_id === 'number') {
+      return item.platform_id === platform.id;
     }
-    return item.platform.id === platform.id;
+    return item.platform_id.id === platform.id;
   });
 
   const getDaBadgeVariant = (da: number) => {
@@ -41,7 +43,11 @@ export function PlatformCard({ platform }: PlatformCardProps) {
     }
 
     try {
-      await addToBoard(platform.id, user.id);
+      if (!currentProjectId) {
+        toast.error('Create or select a project first');
+        return;
+      }
+      await addToBoard(platform.id, currentProjectId);
       toast.success(`Added ${platform.name} to your board`);
     } catch {
       toast.error('Failed to add to board');

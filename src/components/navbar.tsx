@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
+import { ProjectSwitcher } from '@/components/project-switcher';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -25,6 +26,8 @@ export function Navbar() {
           <Image src="/web-app-manifest-512x512.png" alt="BacklinkFlow" width={32} height={32} className="rounded-lg" />
           <span className="font-heading font-bold text-lg tracking-tight">BacklinkFlow</span>
         </Link>
+
+        <ProjectSwitcher />
 
         <nav className="flex flex-1 items-center space-x-1 text-sm font-medium">
           {navLinks.map((link) => {

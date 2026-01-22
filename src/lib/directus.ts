@@ -28,6 +28,12 @@ export interface CategoryRelation {
   categories_id: string | Category;
 }
 
+export interface ProjectCategoryRelation {
+  id?: string;
+  projects_id?: string;
+  categories_id: string | Category;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -44,11 +50,30 @@ export interface UserBoard {
   id: string;
   user: string | User;
   platform: number | Platform;
-  status: 'todo' | 'in_progress' | 'submitted' | 'live';
+  status: 'todo' | 'in_progress' | 'submitted' | 'live' | 'rejected';
   backlink_url: string | null;
   notes: string | null;
   date_created: string;
   date_updated: string;
+}
+
+export interface Project {
+  id: string;
+  user_id: string | User;
+  name: string;
+  website_url: string | null;
+  tags: ProjectCategoryRelation[] | null;
+  date_created: string;
+  date_updated: string;
+}
+
+export interface ProjectTracking {
+  id: string;
+  project_id: string | Project;
+  platform_id: number | Platform;
+  status: 'todo' | 'in_progress' | 'submitted' | 'live' | 'rejected';
+  notes: string | null;
+  live_backlink_url: string | null;
 }
 
 export interface Schema {
@@ -57,6 +82,9 @@ export interface Schema {
   platforms_categories: CategoryRelation[];
   users: User[];
   user_boards: UserBoard[];
+  projects: Project[];
+  projects_categories: ProjectCategoryRelation[];
+  project_tracking: ProjectTracking[];
 }
 
 const getDirectusUrl = () => process.env.DIRECTUS_URL || 'http://localhost:8055';

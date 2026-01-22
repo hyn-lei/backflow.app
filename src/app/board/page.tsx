@@ -7,11 +7,13 @@ import { Footer } from '@/components/footer';
 import { KanbanBoard } from '@/components/kanban-board';
 import { useAuth } from '@/hooks/use-auth';
 import { useBoardStore } from '@/stores/board-store';
+import { useProjectStore } from '@/stores/project-store';
 
 export default function BoardPage() {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
   const { items, isLoading: boardLoading, fetchBoard } = useBoardStore();
+  const { currentProjectId } = useProjectStore();
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
 
   useEffect(() => {
@@ -21,11 +23,11 @@ export default function BoardPage() {
   }, [authLoading, user, router]);
 
   useEffect(() => {
-    if (user?.id) {
-      fetchBoard(user.id);
+    if (currentProjectId) {
+      fetchBoard(currentProjectId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [currentProjectId]);
 
   if (authLoading || !user) {
     return (
@@ -35,8 +37,11 @@ export default function BoardPage() {
     );
   }
 
-  const completedCount = items.filter((item) => item.status === 'live').length;
-  const progressPercent = items.length > 0 ? Math.round((completedCount / items.length) * 100) : 0;
+  const actionableItems = items.filter((item) => item.status !== 'rejected');
+  const completedCount = actionableItems.filter((item) => item.status === 'live').length;
+  const progressPercent = actionableItems.length > 0
+    ? Math.round((completedCount / actionableItems.length) * 100)
+    : 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -86,7 +91,11 @@ export default function BoardPage() {
         </div>
 
         {/* Board Content */}
-        {boardLoading ? (
+        {!currentProjectId ? (
+          <div className="text-center py-12 text-muted-foreground">
+            Select a project to view its board.
+          </div>
+        ) : boardLoading ? (
           <div className="text-center py-12 text-muted-foreground">
             Loading your board...
           </div>

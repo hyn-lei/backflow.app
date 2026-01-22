@@ -23,19 +23,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { UserBoard, Platform } from '@/lib/directus';
+import { ProjectTracking, Platform } from '@/lib/directus';
 import { useBoardStore } from '@/stores/board-store';
 import { toast } from 'sonner';
 
-const COLUMNS: { id: UserBoard['status']; title: string }[] = [
+const COLUMNS: { id: ProjectTracking['status']; title: string }[] = [
   { id: 'todo', title: 'To Do' },
   { id: 'in_progress', title: 'In Progress' },
   { id: 'submitted', title: 'Submitted' },
   { id: 'live', title: 'Live' },
+  { id: 'rejected', title: 'Rejected' },
 ];
 
 interface KanbanBoardProps {
-  items: UserBoard[];
+  items: ProjectTracking[];
   viewMode: 'board' | 'list';
 }
 
@@ -54,6 +55,21 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
     setActiveId(event.active.id as string);
   };
 
+  const performStatusChange = async (item: ProjectTracking, newStatus: ProjectTracking['status']) => {
+    try {
+      await updateStatus(item.id, newStatus);
+      toast.success(`Moved to ${COLUMNS.find((c) => c.id === newStatus)?.title}`);
+      if (newStatus === 'live' && !item.live_backlink_url) {
+        const url = window.prompt('Great! Paste your live backlink URL:');
+        if (url) {
+          await setBacklinkUrl(item.id, url);
+        }
+      }
+    } catch {
+      toast.error('Failed to update status');
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveId(null);
@@ -67,12 +83,7 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
     const newStatus = COLUMNS.find((col) => col.id === overId)?.id;
 
     if (newStatus && newStatus !== activeItem.status) {
-      try {
-        await updateStatus(activeItem.id, newStatus);
-        toast.success(`Moved to ${COLUMNS.find((c) => c.id === newStatus)?.title}`);
-      } catch {
-        toast.error('Failed to update status');
-      }
+      await performStatusChange(activeItem, newStatus);
     }
   };
 
@@ -97,7 +108,12 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
             onRemove={handleRemove}
             onBacklinkChange={setBacklinkUrl}
             onNotesChange={updateNotes}
-            onStatusChange={updateStatus}
+            onStatusChange={(id, status) => {
+              const item = items.find((entry) => entry.id === id);
+              if (item) {
+                void performStatusChange(item, status);
+              }
+            }}
           />
         ))}
       </div>
@@ -111,7 +127,7 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {COLUMNS.map((column) => {
           const columnItems = items.filter((item) => item.status === column.id);
           return (
@@ -122,7 +138,12 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
               onRemove={handleRemove}
               onBacklinkChange={setBacklinkUrl}
               onNotesChange={updateNotes}
-              onStatusChange={updateStatus}
+              onStatusChange={(id, status) => {
+                const item = items.find((entry) => entry.id === id);
+                if (item) {
+                  void performStatusChange(item, status);
+                }
+              }}
             />
           );
         })}
@@ -145,12 +166,12 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
 }
 
 interface KanbanColumnProps {
-  column: { id: UserBoard['status']; title: string };
-  items: UserBoard[];
+  column: { id: ProjectTracking['status']; title: string };
+  items: ProjectTracking[];
   onRemove: (id: string) => void;
   onBacklinkChange: (id: string, url: string) => void;
   onNotesChange: (id: string, notes: string) => void;
-  onStatusChange: (id: string, status: UserBoard['status']) => void;
+  onStatusChange: (id: string, status: ProjectTracking['status']) => void;
 }
 
 function KanbanColumn({
@@ -197,11 +218,11 @@ function KanbanColumn({
 }
 
 interface SortableBoardItemProps {
-  item: UserBoard;
+  item: ProjectTracking;
   onRemove: (id: string) => void;
   onBacklinkChange: (id: string, url: string) => void;
   onNotesChange: (id: string, notes: string) => void;
-  onStatusChange: (id: string, status: UserBoard['status']) => void;
+  onStatusChange: (id: string, status: ProjectTracking['status']) => void;
 }
 
 function SortableBoardItem({
@@ -241,11 +262,11 @@ function SortableBoardItem({
 }
 
 interface BoardItemCardProps {
-  item: UserBoard;
+  item: ProjectTracking;
   onRemove: (id: string) => void;
   onBacklinkChange: (id: string, url: string) => void;
   onNotesChange: (id: string, notes: string) => void;
-  onStatusChange: (id: string, status: UserBoard['status']) => void;
+  onStatusChange: (id: string, status: ProjectTracking['status']) => void;
   isDragging?: boolean;
   dragHandleProps?: Record<string, unknown>;
 }
@@ -261,9 +282,10 @@ function BoardItemCard({
 }: BoardItemCardProps) {
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState(item.notes || '');
-  const [backlinkUrl, setBacklinkUrlLocal] = useState(item.backlink_url || '');
+  const [backlinkUrl, setBacklinkUrlLocal] = useState(item.live_backlink_url || '');
 
-  const platform = typeof item.platform === 'string' ? null : (item.platform as Platform);
+  const platform =
+    typeof item.platform_id === 'number' ? null : (item.platform_id as Platform);
 
   const handleNotesBlur = () => {
     setEditingNotes(false);
@@ -273,13 +295,17 @@ function BoardItemCard({
   };
 
   const handleBacklinkBlur = () => {
-    if (backlinkUrl !== item.backlink_url) {
+    if (backlinkUrl !== item.live_backlink_url) {
       onBacklinkChange(item.id, backlinkUrl);
     }
   };
 
   return (
-    <Card className={`${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}>
+    <Card
+      className={`${isDragging ? 'shadow-lg ring-2 ring-primary' : ''} ${
+        item.status === 'rejected' ? 'opacity-60 grayscale' : ''
+      }`}
+    >
       <CardContent className="p-3">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center space-x-2">
@@ -318,7 +344,7 @@ function BoardItemCard({
         {!dragHandleProps && (
           <select
             value={item.status}
-            onChange={(e) => onStatusChange(item.id, e.target.value as UserBoard['status'])}
+            onChange={(e) => onStatusChange(item.id, e.target.value as ProjectTracking['status'])}
             className="w-full mb-2 text-xs p-1 rounded border border-border bg-background"
           >
             {COLUMNS.map((col) => (

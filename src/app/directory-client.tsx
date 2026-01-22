@@ -9,27 +9,53 @@ import { Footer } from '@/components/footer';
 import { PlatformCard } from '@/components/platform-card';
 import { FilterSidebar } from '@/components/filter-sidebar';
 import { Platform, Category } from '@/lib/directus';
-import { useAuth } from '@/hooks/use-auth';
 import { useBoardStore } from '@/stores/board-store';
+import { useProjectStore } from '@/stores/project-store';
 
 interface DirectoryClientProps {
-  platforms: Platform[];
   categories: Category[];
 }
 
-export function DirectoryClient({ platforms, categories }: DirectoryClientProps) {
+export function DirectoryClient({ categories }: DirectoryClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [costFilter, setCostFilter] = useState('all');
+  const [recommendedPlatforms, setRecommendedPlatforms] = useState<Platform[]>([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
 
-  const { user } = useAuth();
   const { fetchBoard } = useBoardStore();
+  const { currentProjectId, projects } = useProjectStore();
+  const currentProject = projects.find((p) => p.id === currentProjectId);
 
   useEffect(() => {
-    if (user) {
-      fetchBoard(user.id);
+    if (currentProjectId) {
+      fetchBoard(currentProjectId);
     }
-  }, [user, fetchBoard]);
+  }, [currentProjectId, fetchBoard]);
+
+  useEffect(() => {
+    if (!currentProjectId) {
+      setRecommendedPlatforms([]);
+      return;
+    }
+
+    const run = async () => {
+      setIsLoadingRecommendations(true);
+      try {
+        const res = await fetch(`/api/recommendations?projectId=${currentProjectId}`);
+        if (!res.ok) throw new Error('Failed to fetch recommendations');
+        const data = await res.json();
+        setRecommendedPlatforms(data.items || []);
+      } catch (error) {
+        console.error('Failed to load recommendations:', error);
+        setRecommendedPlatforms([]);
+      } finally {
+        setIsLoadingRecommendations(false);
+      }
+    };
+
+    run();
+  }, [currentProjectId]);
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategories((prev) =>
@@ -40,7 +66,7 @@ export function DirectoryClient({ platforms, categories }: DirectoryClientProps)
   };
 
   const filteredPlatforms = useMemo(() => {
-    return platforms.filter((platform) => {
+    return recommendedPlatforms.filter((platform) => {
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -69,7 +95,7 @@ export function DirectoryClient({ platforms, categories }: DirectoryClientProps)
 
       return true;
     });
-  }, [platforms, searchQuery, costFilter, selectedCategories]);
+  }, [recommendedPlatforms, searchQuery, costFilter, selectedCategories]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -131,11 +157,20 @@ export function DirectoryClient({ platforms, categories }: DirectoryClientProps)
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-semibold">
-                    Platforms ({filteredPlatforms.length})
+                    {currentProject?.name ? `Recommended for ${currentProject.name}` : 'Recommended Platforms'}
+                    <span className="text-muted-foreground"> ({filteredPlatforms.length})</span>
                   </h2>
                 </div>
 
-                {filteredPlatforms.length === 0 ? (
+                {!currentProjectId ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    Select or create a project to see personalized recommendations.
+                  </div>
+                ) : isLoadingRecommendations ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    Loading recommendations...
+                  </div>
+                ) : filteredPlatforms.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
                     No platforms found matching your filters.
                   </div>
