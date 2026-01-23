@@ -30,6 +30,7 @@ ARG DIRECTUS_URL=https://directus-backlinkflow.aimazing.site
 ENV NEXT_PUBLIC_APP_URL=https://backlinkflow.app
 
 RUN --mount=type=secret,id=directus_token \
+  test -s /run/secrets/directus_token && echo "Directus token secret mounted" && \
   DIRECTUS_URL=$DIRECTUS_URL \
   DIRECTUS_TOKEN="$(cat /run/secrets/directus_token)" \
   npm run build
