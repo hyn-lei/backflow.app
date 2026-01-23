@@ -24,13 +24,15 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # ENV DIRECTUS_URL=https://directus-doc2markdown.aimazing.site
-ENV DIRECTUS_URL=https://directus-backlinkflow.aimazing.site
-ENV DIRECTUS_TOKEN=RguUCCYA6fYah3rc_2wNQVMd8Zr7G1AA
+ARG DIRECTUS_URL=https://directus-backlinkflow.aimazing.site
 #ENV POSTGRES_URL="postgres://postgres:postRy78XT@192.210.248.10:5432/social_insights"
 #ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuY3ZpbnRlcnZ1LmNvbSQ
 ENV NEXT_PUBLIC_APP_URL=https://backlinkflow.app
 
-RUN npm run build
+RUN --mount=type=secret,id=directus_token \
+  DIRECTUS_URL=$DIRECTUS_URL \
+  DIRECTUS_TOKEN="$(cat /run/secrets/directus_token)" \
+  npm run build
 
 # ---- Production ----
 FROM base AS runner
